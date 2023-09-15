@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  name       String?
+  password   String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt()
+
+  @@map("users")
+}
+
+model AuthToken {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  token      String
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt()
+
+  @@map("auth_tokens")
+}
+
+model Account {
+  id              Int      @id @default(autoincrement())
+  name            String
+  user_id         Int
+  account_balance Decimal  @default(0)
+  minimum_balance Decimal  @default(0)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now()) @updatedAt()
+
+  @@map("accounts")
+}
+
+model Income {
+  id         Int      @id @default(autoincrement())
+  name       String
+  user_id    Int
+  amount     Decimal
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt()
+
+  @@map("incomes")
+}
+
+model AIRequest {
+  id              Int      @id @default(autoincrement())
+  user_id         Int
+  prompt          String
+  response        String?
+  prompt_tokens   Int?
+  response_tokens Int?
+  total_tokens    Int?
+  total_cost      Decimal?
+  status          String
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now()) @updatedAt()
+
+  @@map("ai_requests")
+}

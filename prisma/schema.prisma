@@ -59,8 +59,8 @@ model Income {
 model AIRequest {
   id              Int      @id @default(autoincrement())
   user_id         Int
-  prompt          String
-  response        String?
+  prompt          String   @db.VarChar(5000)
+  response        String?  @db.VarChar(5000)
   prompt_tokens   Int?
   response_tokens Int?
   total_tokens    Int?

@@ -18,7 +18,7 @@ export class AuthMiddleware implements NestMiddleware {
       }
     }
     if (!isValid) {
-      res.status(401).json({ status: 'ERROR', message: 'Unauthorized' });
+      return res.status(401).json({ status: 'ERROR', message: 'Unauthorized' });
     }
     next();
   }

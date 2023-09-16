@@ -23,8 +23,11 @@ export class AIController {
     };
 
     const messages = [];
-    messages.push({ role: 'user', content: '' });
-    const model = 'gpt-4';
+    messages.push({
+      role: 'user',
+      content: 'Write a poem in a single sentence',
+    });
+    const model = 'gpt-3.5-turbo';
     const temperature = 1;
     const data = {
       model: model,
@@ -65,7 +68,6 @@ export class AIController {
         response_tokens: openaiResponse.data.usage.completion_tokens,
         total_tokens: openaiResponse.data.usage.total_tokens,
         total_cost: totalCost,
-        updated_at: new Date(),
         status: 'COMPLETED',
       });
     } else {

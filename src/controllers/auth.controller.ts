@@ -18,6 +18,8 @@ export class AuthController {
       status: 'error',
       message: 'Request incomplete.',
       token: null,
+      name: null,
+      email: null,
     };
     const user = await this.authService.getUserByEmail(params.email);
     if (user) {
@@ -28,6 +30,7 @@ export class AuthController {
       );
       const token = await this.authService.generateToken();
       const user = await this.authService.createUser({
+        name: params.name,
         email: params.email,
         password: hashedPassword,
       });
@@ -40,6 +43,8 @@ export class AuthController {
           response.status = 'success';
           response.message = 'User created successfully.';
           response.token = token;
+          response.name = user.name;
+          response.email = user.email;
         } else {
           response.message = 'Token creation failed. Try sign in.';
         }
@@ -56,6 +61,8 @@ export class AuthController {
       status: 'error',
       message: 'Request incomplete.',
       token: null,
+      name: null,
+      email: null,
     };
     const user = await this.authService.getUserByEmail(params.email);
     if (user) {
@@ -73,6 +80,8 @@ export class AuthController {
           response.status = 'success';
           response.message = 'User signed in successfully.';
           response.token = token;
+          response.name = user.name;
+          response.email = user.email;
         } else {
           response.message = 'Token creation failed. Try sign in.';
         }

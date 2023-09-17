@@ -56,6 +56,17 @@ model Income {
   @@map("incomes")
 }
 
+model Expense {
+  id         Int      @id @default(autoincrement())
+  name       String
+  user_id    Int
+  amount     Decimal
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt()
+
+  @@map("expenses")
+}
+
 model AIRequest {
   id              Int      @id @default(autoincrement())
   user_id         Int

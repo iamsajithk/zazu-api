@@ -7,6 +7,11 @@ import * as crypto from 'crypto';
 @Injectable()
 export class AuthService {
   constructor(private prisma: PrismaService) {}
+  async getUser(where: Prisma.UserWhereInput): Promise<any | null> {
+    return this.prisma.user.findFirst({
+      where: where,
+    });
+  }
   async getUserByEmail(email: string): Promise<any | null> {
     return this.prisma.user.findFirst({
       where: {

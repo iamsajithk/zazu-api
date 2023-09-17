@@ -7,11 +7,19 @@ import { AuthMiddleware } from './middlewares/auth.middleware';
 import { AuthService } from './services/auth.service';
 import { AIController } from './controllers/ai.controller';
 import { AuthController } from './controllers/auth.controller';
+import { DataController } from './controllers/data.controller';
+import { DataService } from './services/data.service';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true })],
-  controllers: [AppController, AIController, AuthController],
-  providers: [AIService, PrismaService, ConfigService, AuthService],
+  controllers: [AppController, AIController, AuthController, DataController],
+  providers: [
+    AIService,
+    PrismaService,
+    ConfigService,
+    AuthService,
+    DataService,
+  ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

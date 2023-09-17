@@ -7,6 +7,9 @@ import { AuthService } from 'src/services/auth.service';
 import { DataService } from 'src/services/data.service';
 import { SaveIncomeDto } from 'src/dtos/save-income.dto';
 import { SaveExpenseDto } from 'src/dtos/save-expense.dto';
+import { DeleteAccountDto } from 'src/dtos/delete-account.dto';
+import { DeleteIncomeDto } from 'src/dtos/delete-income.dto';
+import { DeleteExpenseDto } from 'src/dtos/delete-expense.dto';
 
 @Controller()
 export class DataController {
@@ -94,6 +97,40 @@ export class DataController {
     }
     res.status(200).json(response);
   }
+  @Post('/api/account/delete')
+  async deleteAccount(
+    @Res() res: Response,
+    @USER() user: number,
+    @Body() params: DeleteAccountDto,
+  ): Promise<any> {
+    const response = {
+      status: 'error',
+      message: 'Request incomplete.',
+      id: null,
+    };
+    const userDetails = this.authService.getUser({ id: user });
+    if (userDetails) {
+      const isAccountOwner = await this.dataService.getAccount({
+        id: params.id,
+        user_id: user,
+      });
+      if (isAccountOwner) {
+        const account = await this.dataService.deleteAccount(params.id);
+        if (account) {
+          response.status = 'success';
+          response.message = 'Account deleted.';
+          response.id = account.id;
+        } else {
+          response.message = 'Account not deleted.';
+        }
+      } else {
+        response.message = 'Account not found.';
+      }
+    } else {
+      response.message = 'User not found.';
+    }
+    res.status(200).json(response);
+  }
   @Post('/api/incomes')
   async getIncomes(@Res() res: Response, @USER() user: number): Promise<any> {
     const response = {
@@ -165,6 +202,40 @@ export class DataController {
         } else {
           response.message = 'Income not created.';
         }
+      }
+    } else {
+      response.message = 'User not found.';
+    }
+    res.status(200).json(response);
+  }
+  @Post('/api/income/delete')
+  async deleteIncome(
+    @Res() res: Response,
+    @USER() user: number,
+    @Body() params: DeleteIncomeDto,
+  ): Promise<any> {
+    const response = {
+      status: 'error',
+      message: 'Request incomplete.',
+      id: null,
+    };
+    const userDetails = this.authService.getUser({ id: user });
+    if (userDetails) {
+      const isIncomeOwner = await this.dataService.getIncome({
+        id: params.id,
+        user_id: user,
+      });
+      if (isIncomeOwner) {
+        const income = await this.dataService.deleteIncome(params.id);
+        if (income) {
+          response.status = 'success';
+          response.message = 'Income deleted.';
+          response.id = income.id;
+        } else {
+          response.message = 'Income not deleted.';
+        }
+      } else {
+        response.message = 'Income not found.';
       }
     } else {
       response.message = 'User not found.';
@@ -244,6 +315,40 @@ export class DataController {
         } else {
           response.message = 'Expense not created.';
         }
+      }
+    } else {
+      response.message = 'User not found.';
+    }
+    res.status(200).json(response);
+  }
+  @Post('/api/expense/delete')
+  async deleteExpense(
+    @Res() res: Response,
+    @USER() user: number,
+    @Body() params: DeleteExpenseDto,
+  ): Promise<any> {
+    const response = {
+      status: 'error',
+      message: 'Request incomplete.',
+      id: null,
+    };
+    const userDetails = this.authService.getUser({ id: user });
+    if (userDetails) {
+      const isExpenseOwner = await this.dataService.getExpense({
+        id: params.id,
+        user_id: user,
+      });
+      if (isExpenseOwner) {
+        const expense = await this.dataService.deleteExpense(params.id);
+        if (expense) {
+          response.status = 'success';
+          response.message = 'Expense deleted.';
+          response.id = expense.id;
+        } else {
+          response.message = 'Expense not deleted.';
+        }
+      } else {
+        response.message = 'Expense not found.';
       }
     } else {
       response.message = 'User not found.';

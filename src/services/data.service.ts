@@ -26,6 +26,11 @@ export class DataService {
       data,
     });
   }
+  async deleteAccount(id: number) {
+    return this.prisma.account.delete({
+      where: { id: id },
+    });
+  }
   async getIncomes(where: Prisma.IncomeWhereInput) {
     return this.prisma.income.findMany({
       where: where,
@@ -45,6 +50,11 @@ export class DataService {
     return this.prisma.income.update({
       where: { id: id },
       data,
+    });
+  }
+  async deleteIncome(id: number) {
+    return this.prisma.income.delete({
+      where: { id: id },
     });
   }
 
@@ -67,6 +77,11 @@ export class DataService {
     return this.prisma.expense.update({
       where: { id: id },
       data,
+    });
+  }
+  async deleteExpense(id: number) {
+    return this.prisma.expense.delete({
+      where: { id: id },
     });
   }
 }

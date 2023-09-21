@@ -1,31 +1,65 @@
-import { Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Post, Res } from '@nestjs/common';
 import { AIService } from '../services/ai.service';
 import { USER } from '../decorators/user.decorator';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { Response } from 'express';
+import { AIQuestionDto } from 'src/dtos/ai-question.dto';
+import { DataService } from 'src/services/data.service';
 
 @Controller()
 export class AIController {
   constructor(
     private readonly aiService: AIService,
+    private readonly dataService: DataService,
     private configService: ConfigService,
   ) {}
 
   @Post('/api/ai/ask')
-  async askAI(@Res() res: Response, @USER() user: number): Promise<any> {
+  async askAI(
+    @Res() res: Response,
+    @USER() user: number,
+    @Body() params: AIQuestionDto,
+  ): Promise<any> {
     const response = {
       status: 'error',
       message: 'Request incomplete.',
       type: 'error',
-      response: null,
+      answer: null,
       requestId: null,
     };
 
     const messages = [];
     messages.push({
+      role: 'system',
+      content:
+        'You are Zazu, A helpful AI finance assistant. Answer only finance related questions. If out of scope questions asked reply with "I am not sure about that."',
+    });
+    //Load finance data starts
+    let financePrompt = '';
+    const accounts = await this.dataService.getAccounts({
+      user_id: user,
+    });
+    const incomes = await this.dataService.getIncomes({
+      user_id: user,
+    });
+    const expenses = await this.dataService.getExpenses({
+      user_id: user,
+    });
+    for (let i = 0; i < accounts.length; i++) {
+      financePrompt += `Account: ${accounts[i].name}\nBalance: ${accounts[i].account_balance}\nMinimum Balance: ${accounts[i].minimum_balance}\n`;
+    }
+    for (let i = 0; i < incomes.length; i++) {
+      financePrompt += `Income: ${incomes[i].name}\nAmount: ${incomes[i].amount}\n`;
+    }
+    for (let i = 0; i < expenses.length; i++) {
+      financePrompt += `Expense: ${expenses[i].name}\nAmount: ${expenses[i].amount}\n`;
+    }
+    //Load finance data ends
+    financePrompt += `Question: ${params.question}\n`;
+    messages.push({
       role: 'user',
-      content: 'Write a poem in a single sentence',
+      content: financePrompt,
     });
     const model = 'gpt-3.5-turbo';
     const temperature = 1;
@@ -58,7 +92,8 @@ export class AIController {
       response.status = 'success';
       response.type = 'success';
       response.message = 'Response attached.';
-      response.response = openaiResponse.data;
+      response.answer = openaiResponse.data.choices[0].message.content;
+      response.requestId = aiRequest.id;
       const totalCost = this.getAIRequestCost(
         JSON.stringify(openaiResponse.data),
       );

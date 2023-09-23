@@ -64,8 +64,8 @@ export class AIController {
       role: 'user',
       content: financePrompt,
     });
-    const model = 'gpt-3.5-turbo';
-    // const model = 'gpt-4-0613';
+    // const model = 'gpt-3.5-turbo';
+    const model = 'gpt-4-0613';
     const temperature = 1;
     const data = {
       model: model,

@@ -6,12 +6,14 @@ import axios from 'axios';
 import { Response } from 'express';
 import { AIQuestionDto } from 'src/dtos/ai-question.dto';
 import { DataService } from 'src/services/data.service';
+import { ChatService } from 'src/services/chat.service';
 
 @Controller()
 export class AIController {
   constructor(
     private readonly aiService: AIService,
     private readonly dataService: DataService,
+    private readonly chatService: ChatService,
     private configService: ConfigService,
   ) {}
 
@@ -55,6 +57,7 @@ export class AIController {
     for (let i = 0; i < expenses.length; i++) {
       financePrompt += `Expense: ${expenses[i].name}\nAmount: ${expenses[i].amount}\n`;
     }
+    financePrompt += `Answer as crisp and precise as possible.\n`;
     //Load finance data ends
     financePrompt += `Question: ${params.question}\n`;
     messages.push({
@@ -62,6 +65,7 @@ export class AIController {
       content: financePrompt,
     });
     const model = 'gpt-3.5-turbo';
+    // const model = 'gpt-4-0613';
     const temperature = 1;
     const data = {
       model: model,
@@ -73,6 +77,11 @@ export class AIController {
       frequency_penalty: 0,
       presence_penalty: 0,
     };
+    await this.chatService.createChatMessage({
+      user_id: user,
+      message: params.question,
+      side: 'user',
+    });
     const aiRequest = await this.aiService.createAIRequest({
       prompt: JSON.stringify(data),
       user_id: user,
@@ -89,6 +98,11 @@ export class AIController {
       },
     );
     if (openaiResponse.status === 200) {
+      await this.chatService.createChatMessage({
+        user_id: user,
+        message: openaiResponse.data.choices[0].message.content,
+        side: 'system',
+      });
       response.status = 'success';
       response.type = 'success';
       response.message = 'Response attached.';
@@ -106,6 +120,11 @@ export class AIController {
         status: 'COMPLETED',
       });
     } else {
+      await this.chatService.createChatMessage({
+        user_id: user,
+        message: 'Hey, I am not sure about that.',
+        side: 'system',
+      });
       await this.aiService.updateAIRequest(aiRequest.id, {
         response: JSON.stringify(openaiResponse.data),
         updated_at: new Date(),

@@ -9,16 +9,25 @@ import { AIController } from './controllers/ai.controller';
 import { AuthController } from './controllers/auth.controller';
 import { DataController } from './controllers/data.controller';
 import { DataService } from './services/data.service';
+import { ChatService } from './services/chat.service';
+import { ChatController } from './controllers/chat.controller';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true })],
-  controllers: [AppController, AIController, AuthController, DataController],
+  controllers: [
+    AppController,
+    AIController,
+    AuthController,
+    DataController,
+    ChatController,
+  ],
   providers: [
     AIService,
     PrismaService,
     ConfigService,
     AuthService,
     DataService,
+    ChatService,
   ],
 })
 export class AppModule {

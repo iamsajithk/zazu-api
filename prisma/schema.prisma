@@ -82,3 +82,14 @@ model AIRequest {
 
   @@map("ai_requests")
 }
+
+model ChatMessage {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  side       String
+  message    String   @db.VarChar(5000)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt()
+
+  @@map("chat_messages")
+}
